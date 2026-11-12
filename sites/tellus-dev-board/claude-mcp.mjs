@@ -8,12 +8,16 @@ const send = message => process.stdout.write(JSON.stringify(message) + '\n');
 function boardKey() {
   if (process.env.TELLUS_BOARD_ACCESS) return process.env.TELLUS_BOARD_ACCESS;
   if (process.platform === 'win32') {
+    const env = {...process.env};
+    for (const name of Object.keys(env)) {
+      if (name.toLowerCase() === 'psmodulepath') delete env[name];
+    }
     return execFileSync('powershell.exe',['-NoProfile','-NonInteractive','-Command',
-      "$stored = [Environment]::GetEnvironmentVariable('TELLUS_BOARD_ACCESS_DPAPI','User'); if ($stored) { (New-Object System.Net.NetworkCredential('', (ConvertTo-SecureString $stored))).Password }"], {encoding:'utf8',windowsHide:true}).trim();
+      "$ErrorActionPreference = 'Stop'; $stored = [Environment]::GetEnvironmentVariable('TELLUS_BOARD_ACCESS_DPAPI','User'); if ($stored) { (New-Object System.Net.NetworkCredential('', (ConvertTo-SecureString $stored))).Password }"],
+      {encoding:'utf8',windowsHide:true,env}).trim();
   }
 }
 
-const key = boardKey();
 const input = createInterface({input:process.stdin,crlfDelay:Infinity});
 input.on('line', async line => {
   let message;
@@ -31,6 +35,7 @@ input.on('line', async line => {
     } else if (method === 'ping') {
       send({...base,result:{}});
     } else if (method === 'tools/list' || method === 'tools/call') {
+      const key = boardKey();
       if (!key) throw Error('TELLUS_BOARD_ACCESS is missing on this PC.');
       const response = await fetch(endpoint,{
         method:'POST',redirect:'error',signal:AbortSignal.timeout(20000),
