@@ -47,6 +47,7 @@ async function boardApi(request, db) {
 export default {
   async fetch(request, env) {
     const path = new URL(request.url).pathname;
+    if (path === '/mcp' || path === '/agent-mcp') return handleMcp(request, env, path);
     if (path === '/api/board') return boardApi(request, env.DB);
     const asset = Object.hasOwn(assets,path) && assets[path];
     if (!asset) return new Response('Not found', {status:404});

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tellus-board": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["sites/tellus-dev-board/claude-mcp.mjs"]
+    }
+  }
+}
