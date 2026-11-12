@@ -3,7 +3,18 @@
     "tellus-board": {
       "type": "stdio",
       "command": "powershell.exe",
-      "args": ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "sites/tellus-dev-board/claude-mcp.ps1"]
+      "args": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "RemoteSigned",
+        "-File",
+        "sites/tellus-dev-board/claude-mcp.ps1"
+      ]
+    },
+    "unityMCP": {
+      "type": "http",
+      "url": "http://127.0.0.1:8080/mcp"
     }
   }
 }
